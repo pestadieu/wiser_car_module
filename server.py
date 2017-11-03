@@ -2,6 +2,7 @@
 
 # Comment se connecter à la wifi: https://gist.github.com/taylor224/516de7dd0b707bc0b1b3
 
+import sys
 import socket
 import queue
 import wifi
@@ -18,12 +19,13 @@ class server(Thread):
 		self.name = "server"
 		self.queue_server_obd = queue_server_obd
 		self.queue_obd_server = queue_obd_server
-		#self.stoprequest = threading.Event()
 
 		
 	def run(self):
 		while (true):
 			print "Starting TCP server on" 
+			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			received = sock.recv(1024)
 			print "Jte demande la vitesse maggle"
 			queue_server_obd.put(0D)
 			print "Je reçois la vitesse maggle"
