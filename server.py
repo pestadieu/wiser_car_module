@@ -26,6 +26,7 @@ class server(Thread):
 			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			#sock.connect(http://localhost/wiser/cars,80)
 			#sock.connect(http://localhost:8082/wiser/rsu/123/cars)
+			#sock.connect(http://loacalhost/wosers/cars/stop,80)
 			t = time.time()
 			while (time.time() - t <= 1.0):
 			received = sock.recv(1024) 
@@ -41,107 +42,7 @@ class server(Thread):
 	def listen(self, interface):
 		print "Envoie la demannde"
 		
-	#def Search():
-  #  wifilist = []
-
-   # cells = wifi.Cell.all('wlan0')
-
-  #  for cell in cells:
-  #      wifilist.append(cell)
-
-  #  return wifilist
-    
- #   def FindFromSavedList(ssid):
- #    cell = wifi.Scheme.find('wlan0', ssid)
-
-  #  if cell:
-   #     return cell
-
-  #  return False
-    
-  #  def FindFromSearchList(ssid):
-  #  wifilist = Search()
-
-  #  for cell in wifilist:
-   #     if cell.ssid == ssid:
-   #         return cell
-
-  #  return False
-    
-   # def Connect(ssid, password=None):
-  #  cell = FindFromSearchList(ssid)
-
-  #  if cell:
-     #   savedcell = FindFromSavedList(cell.ssid)
-
-        # Already Saved from Setting
-     #   if savedcell:
-      #      savedcell.activate()
-      #      return cell
-
-        # First time to conenct
-    #    else:
-     #       if cell.encrypted:
-     #           if password:
-     #               scheme = Add(cell, password)
-
-      #              try:
-     #                   scheme.activate()
-
-                    # Wrong Password
-       #             except wifi.exceptions.ConnectionError:
-       #                 Delete(ssid)
-       #                 return False
-
-       #             return cell
-         #       else:
-         #           return False
-        #    else:
-        #        scheme = Add(cell)
-
-        #        try:
-        #            scheme.activate()
-         #       except wifi.exceptions.ConnectionError:
-         #           Delete(ssid)
-         #           return False
-
-         #       return cell
-    
- #   return False
-    
-    
-  #  def Add(cell, password=None):
-   # if not cell:
-   #     return False
-
-   # scheme = wifi.Scheme.for_cell('wlan0', cell.ssid, cell, password)
-   # scheme.save()
-   # return scheme
-    
-    
-  #  def Delete(ssid):
-    #if not ssid:
-    #    return False
-
-    #cell = FindFromSavedList(ssid)
-
-  #  if cell:
-   #     cell.delete()
-    #    return True
-
-  #  return False
-    
-    
-   # if __name__ == '__main__':
-    # Search WiFi and return WiFi list
-   # print Search()
-
-    # Connect WiFi with password & without password
-  #  print Connect('OpenWiFi')
-   # print Connect('ClosedWiFi', 'password')
-
-    # Delete WiFi from auto connect list
-   # print Delete('DeleteWiFi')	
+	
 		
 
     
