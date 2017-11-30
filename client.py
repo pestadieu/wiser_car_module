@@ -12,6 +12,9 @@ from threading import Thread
 from pprint import pprint
 import httplib, urllib
 
+
+ADDR = "localhost"
+PORT = "8083"
 class client(Thread):
 	
 	#json_file = json.loads('car.json')
@@ -25,12 +28,15 @@ class client(Thread):
 	def run(self):
 		while (True):
 			print("Starting HTTP client on")
+			params = #Add the json file here
+			headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
+			conn = httplib.HTTPConnection(ADDR+":"+PORT)
+			conn.request("POST", "/wiser/rsu", params, headers)
+			response = conn.getresponse()
+			print(response.status, response.reason)
+			data = response.read()
 			
-			
-			
-			
-			 
-			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			"""sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			sock.connect(http://localhost/wiser/cars,80)
 			#sock.connect(http://localhost:8082/wiser/rsu/123/cars)
 			#sock.connect(http://loacalhost/wosers/cars/stop,80)
@@ -44,7 +50,8 @@ class client(Thread):
 				queue_obd_client.get("0D")
 				# send signal stop to vehicle
 				if (json_file[action][stop]== True):
-					queue_client_obd.put("EE")		
+					queue_client_obd.put("EE")"""		
+		
 		
 	def listen(self, interface):
 		print("Envoie la demannde")
