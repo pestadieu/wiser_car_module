@@ -11,21 +11,21 @@ can_frame_fmt = "=IB3x8s"
 
 class OBD_handler(Thread):
 		
-	def __init__(self, queue_server_obd, queue_obd_server):
+	def __init__(self, queue_client_obd, queue_obd_client):
 		Thread.__init__(self)
 		self.name = "OBD_handler"
-		self.queue_server_obd = queue_server_obd
-		self.queue_obd_server = queue_obd_server
+		self.queue_client_obd = queue_client_obd
+		self.queue_obd_client = queue_obd_client
 		
 	def run(self):
 		while(True):
 			while(True):
-				obd_pid = self.queue_server_obd.get() # "0D" -> vitesse, "EE" -> Stop
+				obd_pid = self.queue_client_obd.get() # "0D" -> vitesse, "EE" -> Stop
 				if not obd_pid:
 					break
 			data = send_obd_frame(obd_pid)
 			data = process_obd(data, obd_pid)
-			self.queue_obd_server.put(data)
+			self.queue_obd_client.put(data)
 		
 def send_obd_frame(obd_pid):
 	s = socket.socket(socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
