@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from Queue import Queue
+from queue import Queue
 # https://www.safaribooksonline.com/library/view/python-cookbook-3rd/9781449357337/ch12s03.html
 
 from client import *
