@@ -1,6 +1,7 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
-from queue import Queue
+from Queue import Queue
 # https://www.safaribooksonline.com/library/view/python-cookbook-3rd/9781449357337/ch12s03.html
 
 from client import *
@@ -18,4 +19,4 @@ if(__name__ == '__main__'):
 	
 	# Killing the threads
 	thread1.join()
-    thread2.join()
+	thread2.join()

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # Comment se connecter à la wifi: https://gist.github.com/taylor224/516de7dd0b707bc0b1b3
 import time
