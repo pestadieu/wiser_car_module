@@ -5,7 +5,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 import simplejson
-import RPI.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 
 ADDR = 'localhost'
