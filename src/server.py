@@ -10,32 +10,32 @@ import time
 
 ADDR = 'localhost'
 PATH = '/wiser/cars/stop'
-PORT = 8080
+PORT = 8081
 QUEUE = "queue_server_obd"
 
 class handle_led(Thread):
-	def __init__(self, queue_server_obd, queue_obd_server):
+	def __init__(self):
 		Thread.__init__(self)
 		self.name = "led"
-		GPIO.setupmode(GPIO.BCM)
-		GPIO.setup(18, GPIO.OUT)
 
-	def run():
-		t = time.time()
-		while((t - time.time()) < 10.0):
-			print("blink !!")
-			GPIO.output(18, GPIO.HIGH)
-			time.sleep(1)
-			GPIO.output(18, GPIO.LOW)
-			time.sleep(1)
-		return
+	def run(self):
+                t = time.time()
+                GPIO.setmode(GPIO.BCM)
+                GPIO.setup(18,GPIO.OUT)
+                while((time.time() - t) < 10.0):
+                        print("blink !!")
+                        GPIO.output(18, GPIO.HIGH)
+                        time.sleep(1)
+                        GPIO.output(18, GPIO.LOW)
+                        time.sleep(1)
+                return
 
 class Serv(BaseHTTPRequestHandler):
 	def _set_headers(self):
 		self.send_response(200)
 		self.send_header('Content-type', 'text/plain')
 		self.end_headers()
-		return
+		return	
 
 	def do_POST(self):
 		print("Got post!!")
@@ -67,4 +67,9 @@ class server(Thread):
 		httpd.serve_forever()
 
 
-        
+if( __name__=="__main__" ):
+        server_address = (ADDR, PORT)
+        httpd = HTTPServer(server_address, Serv)
+        print('Starting httpd...')
+        httpd.serve_forever()
+
