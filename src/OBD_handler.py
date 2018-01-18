@@ -76,7 +76,19 @@ def client_send():
 	resp = response.read()
     
 def retreive_speed():
-	speed = send_obd_frame("OD")
+	speed = send_obd_frame("0D")
+	return speed
+
+def retreive_rpm():
+	speed = send_obd_frame("0C")
+	return speed
+
+def retreive_engine_temp():
+	speed = send_obd_frame("05")
+	return speed
+
+def retreive_engine_presure():
+	speed = send_obd_frame("0A")
 	return speed
 
 def change_speed_in_json(speed):
@@ -88,7 +100,3 @@ def change_speed_in_json(speed):
 
 	with open(JSON_PATH, "w") as jsonFile:
 		json.dump(data, jsonFile)
-	
-	
-	
-	
