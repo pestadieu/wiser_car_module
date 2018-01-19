@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# WiFi connection: https://gist.github.com/taylor224/516de7dd0b707bc0b1b3
 
 import socket
 import struct
@@ -14,6 +13,8 @@ from queue import Queue, Empty
 ADDR = "localhost"
 PORT = "8083"
 PATH = "/wiser/rsu"
+
+JSON_PATH = "src/data/1.json"
 
 INTERFACE = "vcan0"
 can_frame_fmt = "=IB3x8s"
@@ -43,7 +44,14 @@ def send_recv_obd_frame(obd_pid):
 	s = socket.socket(socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
 	s.bind((INTERFACE,))
 	try:
-		s.send(build_can_frame(0x7DF, b'\x02\x01\x0d'))
+		if(obd_pid == "0D"):
+			s.send(build_can_frame(0x7DF, b'\x02\x01\x0d'))
+		elif(obd_pid == "0C"):
+			s.send(build_can_frame(0x7DF, b'\x02\x01\x0c'))
+		elif(obd_pid == "05"):
+			s.send(build_can_frame(0x7DF, b'\x02\x01\x05'))
+		elif(obd_pid == "0A"):
+			s.send(build_can_frame(0x7DF, b'\x02\x01\x0a'))
 	except socket.error:
 		print('Error sending CAN frame')
 	data = recieve_can_frame(s)
@@ -59,15 +67,12 @@ def recieve_can_frame(socket):
 	frame, addr = socket.recvfrom(16)
 	can_id, can_dlc, data = struct.unpack(can_frame_fmt, frame)
 	return data[3:can_dlc]
-	
-def process_obd(data, obd_pid):
-	if(str(obd_pid) == "0D"):
-		return(str(int.from_bytes(data, byteorder='big')))
-	elif(str(obd_pid) == "EE"):
-		return("OK")
 		
 def client_send():
-	change_speed_in_json(retreive_speed())
+	change_json("speed", retreive_speed())
+	change_json("coolant_temp", retreive_engine_temp())
+	change_json("rpm", retreive_rpm())
+	change_json("fuelPressure", retreive_fuel_pressure())
 	headers = {"Content-type": "application/json", "Accept": "text/plain"}
 	conn = http.client.HTTPConnection(ADDR+":"+PORT)
 	conn.request("POST", PATH, 3, headers)
@@ -76,27 +81,26 @@ def client_send():
 	resp = response.read()
     
 def retreive_speed():
-	speed = send_obd_frame("0D")
-	return speed
+	speed = send_recv_obd_frame("0D")
+	return str(int.from_bytes(speed, byteorder='big'))
 
 def retreive_rpm():
-	speed = send_obd_frame("0C")
-	return speed
+	rpm = send_recv_obd_frame("0C")
+	return str(int.from_bytes(rpm, byteorder='big'))
 
 def retreive_engine_temp():
-	speed = send_obd_frame("05")
-	return speed
+	engine_temp = send_recv_obd_frame("05")
+	return str(int.from_bytes(engine_temp, byteorder='big'))
 
-def retreive_engine_presure():
-	speed = send_obd_frame("0A")
-	return speed
+def retreive_fuel_pressure():
+	fuel_pressure = send_recv_obd_frame("0A")
+	return str(3*int.from_bytes(fuel_pressure, byteorder='big'))
 
-def change_speed_in_json(speed):
-	with open("1.json", "r") as jsonFile:
+def change_json(field, value):
+	with open(JSON_PATH, "r") as jsonFile:
 		data = json.load(jsonFile)
 
-	tmp = data["params"]["speed"]
-	data["params"]["speed"] = str(speed)
+	data["params"][field] = value
 
 	with open(JSON_PATH, "w") as jsonFile:
 		json.dump(data, jsonFile)

@@ -5,13 +5,16 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 import simplejson
-import RPi.GPIO as GPIO
 import time
 
-ADDR = 'localhost'
-PATH = '/wiser/cars/stop'
-PORT = 8081
+ADDR  = 'localhost'
+PATH  = '/wiser/cars/stop'
+PORT  = 8081
 QUEUE = "queue_server_obd"
+RPI   = False
+
+if(RPI):
+	import RPi.GPIO as GPIO
 
 class handle_led(Thread):
 	def __init__(self):
@@ -20,15 +23,22 @@ class handle_led(Thread):
 
 	def run(self):
                 t = time.time()
-                GPIO.setmode(GPIO.BCM)
-                GPIO.setup(18,GPIO.OUT)
-                while((time.time() - t) < 10.0):
+                if(RPI):
+                    GPIO.setmode(GPIO.BCM)
+                    GPIO.setup(18,GPIO.OUT)
+                    while((time.time() - t) < 10.0):
                         print("blink !!")
                         GPIO.output(18, GPIO.HIGH)
                         time.sleep(1)
                         GPIO.output(18, GPIO.LOW)
                         time.sleep(1)
-                GPIO.cleanup()
+                    GPIO.cleanup()
+                else:
+                    while((time.time() - t) < 10.0):
+                            print("LED is high !!")
+                            time.sleep(1)
+                            print("LED is low !!")
+                            time.sleep(1)
                 return
 
 class Serv(BaseHTTPRequestHandler):
