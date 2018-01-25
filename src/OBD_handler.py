@@ -4,13 +4,14 @@
 import socket
 import struct
 import sys
+import datetime
 import time
 import json
-import http.client, urllib
+import requests
 from threading import Thread
 from queue import Queue, Empty
 
-ADDR = "localhost"
+ADDR = "192.168.137.6"
 PORT = "8083"
 PATH = "/wiser/rsu"
 
@@ -26,7 +27,6 @@ class OBD_handler(Thread):
 		self.name = "OBD_handler"
 		self.queue_server_obd = queue_server_obd
 		self.queue_obd_server = queue_obd_server
-		#self.client = client()
 		
 	def run(self):
 		while(True):
@@ -69,38 +69,51 @@ def recieve_can_frame(socket):
 	return data[3:can_dlc]
 		
 def client_send():
-	change_json("speed", retreive_speed())
-	change_json("coolant_temp", retreive_engine_temp())
-	change_json("rpm", retreive_rpm())
-	change_json("fuelPressure", retreive_fuel_pressure())
-	headers = {"Content-type": "application/json", "Accept": "text/plain"}
-	conn = http.client.HTTPConnection(ADDR+":"+PORT)
-	conn.request("POST", PATH, 3, headers)
-	response = conn.getresponse()
-	print(response.status, response.reason)
-	resp = response.read()
+	d = datetime.datetime.utcnow()
+	info = {
+		"apiVersion": "1.0",
+		"typeOfVehicule": "car",
+		"idVehicule": "1234",
+		"date": d.isoformat("T") + "Z",
+		"params": {
+			"speed": retreive_speed(),
+			"coolant_temp": retreive_engine_coolant_temp(),
+			"rpm": "300",
+			"fuelPressure": retreive_fuel_pressure()
+			}
+		}
+	# ~ info = {
+		# ~ "apiVersion": "1.0",
+		# ~ "typeOfVehicule": "car",
+		# ~ "idVehicule": "1234",
+		# ~ "date": d.isoformat("T") + "Z",
+		# ~ "params": {
+			# ~ "speed": "45",
+			# ~ "coolant_temp": "30",
+			# ~ "rpm": "300",
+			# ~ "fuelPressure": "50"
+			# ~ }
+		# ~ }
+	print(info)
+	requests.post("http://"+ADDR+":"+PORT+PATH, json=info)
     
 def retreive_speed():
 	speed = send_recv_obd_frame("0D")
-	return str(int.from_bytes(speed, byteorder='big'))
+	speed = str(int.from_bytes(speed, byteorder='big'))
+	return(speed)
 
-def retreive_rpm():
-	rpm = send_recv_obd_frame("0C")
-	return str(int.from_bytes(rpm, byteorder='big'))
+# ~ def retreive_rpm():
+	# ~ rpm = send_recv_obd_frame("0C")
+	# ~ rpm = str(256 * int.from_bytes(rpm[0], 'big' + int.from_bytes(rpm[1], 'big')/4)
+	# ~ return(rpm[::2])
 
-def retreive_engine_temp():
-	engine_temp = send_recv_obd_frame("05")
-	return str(int.from_bytes(engine_temp, byteorder='big'))
+def retreive_engine_coolant_temp():
+	engine_coolant_temp = send_recv_obd_frame("05")
+	engine_coolant_temp = str(int.from_bytes(engine_coolant_temp, 'big') - 0x40)
+	return(engine_coolant_temp)
 
 def retreive_fuel_pressure():
 	fuel_pressure = send_recv_obd_frame("0A")
-	return str(3*int.from_bytes(fuel_pressure, byteorder='big'))
+	fuel_pressure = str(3*int.from_bytes(fuel_pressure, byteorder='big'))
+	return(fuel_pressure)
 
-def change_json(field, value):
-	with open(JSON_PATH, "r") as jsonFile:
-		data = json.load(jsonFile)
-
-	data["params"][field] = value
-
-	with open(JSON_PATH, "w") as jsonFile:
-		json.dump(data, jsonFile)

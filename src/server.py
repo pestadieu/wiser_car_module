@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-#from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 import simplejson
 import time
 
-ADDR  = 'localhost'
+ADDR  = '192.168.137.144'
 PATH  = '/wiser/cars/stop'
 PORT  = 8081
 QUEUE = "queue_server_obd"
@@ -54,11 +53,11 @@ class Serv(BaseHTTPRequestHandler):
 		self.send_response(200)
 		self.end_headers()
 		data = simplejson.loads(self.data_string)
-		if(data["action"]["stop"] == "true"):
+		print(data)
+		if(data["actions"]["stop"] == "true"):
 			 #QUEUE.put("EE")
 			 thread_led = handle_led()
 			 thread_led.start()
-			 print("Stop the car !!!!!!")
 		self._set_headers()
 		return
 
