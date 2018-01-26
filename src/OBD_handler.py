@@ -78,7 +78,7 @@ def client_send():
 		"params": {
 			"speed": retreive_speed(),
 			"coolant_temp": retreive_engine_coolant_temp(),
-			"rpm": "300",
+			"rpm": retreive_rpm(),
 			"fuelPressure": retreive_fuel_pressure()
 			}
 		}
@@ -102,13 +102,14 @@ def retreive_speed():
 	speed = str(int.from_bytes(speed, byteorder='big'))
 	return(speed)
 
-# ~ def retreive_rpm():
-	# ~ rpm = send_recv_obd_frame("0C")
-	# ~ rpm = str(256 * int.from_bytes(rpm[0], 'big' + int.from_bytes(rpm[1], 'big')/4)
-	# ~ return(rpm[::2])
+def retreive_rpm():
+	rpm = send_recv_obd_frame("0C")
+	rpm = str((256 * rpm[0] + rpm[1])/4)
+	return(rpm)
 
 def retreive_engine_coolant_temp():
 	engine_coolant_temp = send_recv_obd_frame("05")
+	print(engine_coolant_temp)
 	engine_coolant_temp = str(int.from_bytes(engine_coolant_temp, 'big') - 0x40)
 	return(engine_coolant_temp)
 
