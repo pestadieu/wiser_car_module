@@ -82,19 +82,7 @@ def client_send():
 			"fuelPressure": retreive_fuel_pressure()
 			}
 		}
-	# ~ info = {
-		# ~ "apiVersion": "1.0",
-		# ~ "typeOfVehicule": "car",
-		# ~ "idVehicule": "1234",
-		# ~ "date": d.isoformat("T") + "Z",
-		# ~ "params": {
-			# ~ "speed": "45",
-			# ~ "coolant_temp": "30",
-			# ~ "rpm": "300",
-			# ~ "fuelPressure": "50"
-			# ~ }
-		# ~ }
-	print(info)
+	#print(info)
 	requests.post("http://"+ADDR+":"+PORT+PATH, json=info)
     
 def retreive_speed():
